@@ -1,0 +1,8 @@
+{
+    "identification": "ABC123",
+    "location": {
+    "latitude": 37.7749,
+    "longitude": -122.4194,
+    "altitude": 5000
+    }
+    }

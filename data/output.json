@@ -1,0 +1,15 @@
+{
+    "identification": "ABC123",
+    "location": {
+    "latitude": 37.7749,
+    "longitude": -122.4194,
+    "altitude": 5000
+    },
+    "distancia": 1000,
+    "azimuth": 45,
+    "elevation": 30,
+    "frequency": 109.5,
+    "aircraft_type": "avión",
+    "detection_time": "2023-05-10T12:00:00Z",
+    "speed": 300
+    }

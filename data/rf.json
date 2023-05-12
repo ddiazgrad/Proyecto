@@ -1,0 +1,15 @@
+{
+    "module" :"rf",
+    "identification": "ABC123",
+    "location": {
+    "latitude": 37.7749,
+    "longitude": -122.4194,
+    "altitude": 5000
+    },
+    "distancia": 1000,
+    "power": -70,
+    "azimuth": 45,
+    "height": 30,
+    "freq": 2.4e9,
+    "speed": 300
+    }
