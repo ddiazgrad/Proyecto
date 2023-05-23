@@ -8,21 +8,21 @@ sensor_data = {
     "module" :"adsb",
     "identification": "ABC123",
     "location": {
-    "latitude": 37.7749,
-    "longitude": -122.4194,
+    "x": 37.7749,
+    "y": -122.4194,
     "altitude": 5000
     },
-    "detection_time": 100323232
+    "timestamp": 100323232
     },
     "transponder_s_advanced": {
     "module" :"transponder_s_advanced",
     "identification": "ABC123",
     "location": {
-    "latitude": 37.7749,
-    "longitude": -122.4194,
+    "x": 37.7749,
+    "y": -122.4194,
     "altitude": 5000
     },
-    "detection_time": 100323232
+    "timestamp": 100323232
     },
     "transponder_s_elemental": {
     "module" :"transponder_s_elemental",
@@ -30,46 +30,42 @@ sensor_data = {
     "location": {
     "altitude": 5000
     },
-    "detection_time": 100323232
+    "timestamp": 100323232
     },
-    "remote_id": {
-    "module" :"remote_id",
+    "remoteid": {
+    "module" :"remoteid",
     "identification": "ABC123",
     "location": {
-    "latitude": 37.7749,
-    "longitude": -122.4194,
+    "x": 37.7749,
+    "y": -122.4194,
     "altitude": 5000
     },
-    "detection_time": 100323232,
+    "timestamp": 100323232,
     },
     "array_rf": {
     "module" :"array_rf",
     "azimuth": 45,
     "freq": 2.4e9,
     "power": -70,
-    "detection_time": 100323232
+    "timestamp": 100323232
     },    
     "camara": {
     "module" :"camera",
+    "flight_type": "drone",
     "identification": "ABC123",
     "location": {
-    "latitude": 37.7749,
-    "longitude": -122.4194,
+    "x": 37.7749,
+    "y": -122.4194,
     "altitude": 5000
     },
-    "detection_time": 100323232
+    "timestamp": 100323232
     }
     # Agrega más sensores según sea necesario
 }
 
 def generate_fake_data(sensor_data,sensor):
-    # Genera datos ficticios para el sensor especificado
-    # Aquí puedes aplicar la lógica de generación de datos según tus necesidades
-    # Por simplicidad, se generará un valor aleatorio entre 0 y 100
-    print ("generate fake_data")
+
     fake_data = sensor_data
-    print (fake_data)
-    # Ruta del directorio donde se almacenarán los archivos JSON del sensor
     sensor_directory = f"../datos_sensores/{sensor}"
     
     # Crea el directorio si no existe
@@ -77,9 +73,10 @@ def generate_fake_data(sensor_data,sensor):
         os.makedirs(sensor_directory)
     
     # Genera un nombre de archivo único basado en la fecha y hora actual
-    timestamp = time.strftime("%Y%m%d%H%M%S")
+    # timestamp = time.strftime("%Y%m%d%H%M%S")
+    timestamp = time.time()
     file_name = f"data_{timestamp}.json"
-    
+    fake_data ["timestamp"] = timestamp
     # Ruta completa del archivo JSON
     file_path = os.path.join(sensor_directory, file_name)
     
@@ -89,34 +86,134 @@ def generate_fake_data(sensor_data,sensor):
     
     return fake_data
 
-def count_new_json_files():
-    while True:
-        new_file_count = 0
-        # for sensor, data in sensor_data.items():
-        #     # Ruta del directorio donde se encuentran los archivos JSON del sensor
-        #     sensor_directory = f"../datos_sensores/{sensor}"
+
+def process_camara(data):
+    print ("Processing camera...")
+    final_data = {
+        "sensor": "camera",
+        "identification": data ["identification"],
+        "location": {
+            "x": data["location"]["x"],
+            "y": data["location"]["y"],
+            "altitude": data["location"]["altitude"]
+        },
+        "distance": None,
+        "azimuth": None,
+        "frequency": None,
+        "flight_type": data["flight_type"] ,
+        "timestamp": data["timestamp"],
+        "speed": None
+    }
+
+    print (final_data)
+
+
+def process_adsb(data):
+    print ("Processing ads-b...")
+    final_data = {
+        "sensor": "ads-b",
+        "identification": data ["identification"],
+        "location": {
+            "x": data["location"]["x"],
+            "y": data["location"]["y"],
+            "altitude": data["location"]["altitude"]
+        },
+        "distance": None,
+        "azimuth": None,
+        "frequency": None,
+        "flight_type": "heavyplane" ,
+        "timestamp": data["timestamp"],
+        "speed": None
+    }
+
+    print (final_data)
+
+def process_remoteid(data):
+    print ("Processing remoteid...")
+    final_data = {
+        "sensor": "remtoteid",
+        "identification": data ["identification"],
+        "location": {
+            "x": data["location"]["x"],
+            "y": data["location"]["y"],
+            "altitude": data["location"]["altitude"]
+        },
+        "distance": None,
+        "azimuth": None,
+        "frequency": None,
+        "flight_type": "heavyplane" ,
+        "timestamp": data["timestamp"],
+        "speed": None
+    }
+
+    print (final_data)
+
+def process_final_jsons():
+    print ("Processing final jsons")
+    output_directory = "../datos_sensores/json_final"
+    for sensor in sensor_data:
+        sensor_directory = f"../datos_sensores/{sensor}"
+        json_files = os.listdir(sensor_directory)
+        for json_file in json_files:
+            file_path = os.path.join(sensor_directory, json_file)
             
-        #     # Obtiene la lista de archivos JSON en el directorio del sensor
-        #     json_files = os.listdir(sensor_directory)
-            
-        #     for json_file in json_files:
-        #         file_path = os.path.join(sensor_directory, json_file)
-        #         # Verifica si el archivo fue generado después del último registro
-        #         # if os.path.getmtime(file_path) > data["last_generated"]:
-        #         #     new_file_count += 1
-        
-        # Genera datos ficticios para cada sensor y actualiza el contador y la marca de tiempo
+            with open(file_path, "r") as json_file:
+                data = json.load(json_file)
+                # Extrae los datos necesarios del JSON
+                # y construye el JSON final
+
+                if sensor == "camara":
+                    process_camara(data)
+                elif sensor == "adsb":
+                    process_adsb(data)
+                elif sensor == "remoteid":
+                    process_remoteid(data)
+                final_data = {
+                    "sensor": sensor
+                    # "module": ["module"],
+                    # "identification": data["identification"],
+                    # "location": data["location"],
+                    # "timestamp": data["timestamp"]
+                }
+            timestamp = data["timestamp"]
+
+            output_file_name = f"../datos_sensores/json_final/{sensor}_{timestamp}"
+            # output_file_path = os.path.join(output_directory, output_file_name)
+            # print (output_file_path)
+            # Guarda el JSON final en el directorio de salida
+            with open(output_file_name, "w") as output_json_file:
+                json.dump(final_data, output_json_file)
+                
+        # Elimina el archivo JSON procesado
+        os.remove(file_path)
+
+
+
+def create_sensors_data():
+    for i in range (1):
         for sensor in sensor_data:
             fake_data = generate_fake_data(sensor_data[sensor],sensor)
-            # sensor_data[sensor]["last_generated"] = time.time()
-            # Puedes hacer algo con los datos ficticios generados, como almacenarlos en un archivo JSON
-            
-        # Imprime el recuento de nuevos archivos JSON y los datos ficticios generados para cada sensor
-        print("Recuento de nuevos archivos JSON:")
-        for sensor, data in sensor_data.items():
-            # print(f"Sensor {sensor}: {data['count']}")
-            print(f"Dato ficticio generado para {sensor}: {fake_data}")
-        
-        time.sleep(1)  # Espera un segundo antes de la siguiente verificación
 
-count_new_json_files()
+
+        # for sensor, data in sensor_data.items():        
+        # time.sleep(1)
+
+    process_final_jsons() 
+
+def clear_sensor_data():
+    for sensor in sensor_data:
+        # Ruta del directorio donde se encuentran los archivos JSON del sensor
+        sensor_directory = f"../datos_sensores/{sensor}"
+        
+        # Elimina todos los archivos JSON en el directorio del sensor
+        file_list = os.listdir(sensor_directory)
+        for file_name in file_list:
+            file_path = os.path.join(sensor_directory, file_name)
+            os.remove(file_path)
+    directory = f"../datos_sensores/json_final"
+    file_list = os.listdir(directory)
+    for file_name in file_list:
+        file_path = os.path.join(directory,file_name)
+        os.remove(file_path)
+clear_sensor_data()
+create_sensors_data()
